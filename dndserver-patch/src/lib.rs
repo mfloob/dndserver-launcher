@@ -31,7 +31,8 @@ fn hk_some_function(
 // 7FF61D537480 function add
 // 7FF61D5376B6 terminate address
 unsafe fn patch_multiclient() -> bool {
-    let fn_some_function: FnSomeFunction = std::mem::transmute(0x7FF61D537480 as *const u64);
+    let address = utils::get_base_address() + 0x21F7480;
+    let fn_some_function: FnSomeFunction = std::mem::transmute(address as *const u64);
     SomeFunction
         .initialize(fn_some_function, hk_some_function)
         .unwrap()
