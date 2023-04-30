@@ -18,9 +18,9 @@ Press Launch
 
 Install [rust](https://doc.rust-lang.org/cargo/getting-started/installation.html)
 
-`git clone https://github.com/mfloob/dndserver-launcher.git`
-
 `rustup install nightly`
+
+`git clone https://github.com/mfloob/dndserver-launcher.git`
 
 `cd dndserver-launcher` and run `cargo +nightly build`
 
