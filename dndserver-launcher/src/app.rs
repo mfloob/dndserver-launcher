@@ -116,7 +116,10 @@ impl eframe::App for App {
             };
             ui.add(egui::Label::new(format!("{}", data.dnd_binary_path)).wrap(true));
 
-            ui.allocate_space(egui::vec2(1f32, 10f32));
+            ui.separator();
+
+            ui.allocate_space(egui::vec2(1f32, 2f32));
+            ui.label("Launch arguments:");
             ui.add(egui::TextEdit::singleline(&mut data.dnd_binary_arguments).hint_text("Launch args"));
 
             ui.allocate_space(egui::vec2(1f32, ui.available_height() - 45f32));
@@ -127,7 +130,7 @@ impl eframe::App for App {
                 };
                 ui.label(text);
             });
-            
+
             ui.allocate_space(egui::vec2(1f32, ui.available_height() - 25f32));
             if data.process.is_none() {
                 ui.vertical_centered(|ui| {
