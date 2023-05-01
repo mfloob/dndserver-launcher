@@ -6,6 +6,7 @@ use crate::{memory};
 #[serde(default)]
 pub struct AppContext {
     dnd_binary_path: String,
+    dnd_binary_arguments: String,
     dll_path: String,
     #[serde(skip)]
     process: Option<SpawnedProcess>,
@@ -15,6 +16,7 @@ impl Default for AppContext {
     fn default() -> Self {
         Self {
             dnd_binary_path: String::default(),
+            dnd_binary_arguments: "-server=dcweb.pages.dev:80".to_owned(),
             dll_path: App::get_patch_location(),
             process: None,
         }
@@ -82,6 +84,7 @@ impl eframe::App for App {
                     if process.is_doa {
                         process.handle.kill().unwrap();
                         let handle = Command::new(data.dnd_binary_path.clone())
+                            .arg(data.dnd_binary_arguments.to_owned())
                             .spawn().unwrap();
 
                         data.process = Some(SpawnedProcess::new(handle, false));
@@ -105,12 +108,16 @@ impl eframe::App for App {
                     .add_filter("exe", &["exe"])
                     .pick_file() {
                         Some(path) => {
+                            println!("{}", path.display().to_string());
                             data.dnd_binary_path = path.display().to_string();
                         },
                         _ => ()
                 }
             };
             ui.add(egui::Label::new(format!("{}", data.dnd_binary_path)).wrap(true));
+
+            ui.allocate_space(egui::vec2(1f32, 10f32));
+            ui.add(egui::TextEdit::singleline(&mut data.dnd_binary_arguments).hint_text("Launch args"));
 
             ui.allocate_space(egui::vec2(1f32, ui.available_height() - 45f32));
             ui.vertical_centered(|ui| {
@@ -128,6 +135,7 @@ impl eframe::App for App {
                         let p = memory::get_process_list("dungeoncrawler.exe");
 
                         let handle = Command::new(data.dnd_binary_path.clone())
+                            .arg(data.dnd_binary_arguments.to_owned())
                             .spawn()
                             .unwrap();
 

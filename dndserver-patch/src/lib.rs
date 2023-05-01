@@ -28,6 +28,17 @@ fn hk_some_function(
     1i64
 }
 
+type FnSomeFunction2 = unsafe extern "fastcall" fn(
+    a1: i64) -> i64;
+static_detour! {
+    static SomeFunction2: unsafe extern "fastcall" fn(
+        i64) -> i64;
+}
+fn hk_some_function2(
+    _a1: i64) -> i64 {
+    1i64
+}
+
 // 7FF61D537480 function add
 // 7FF61D5376B6 terminate address
 unsafe fn patch_multiclient() -> bool {
