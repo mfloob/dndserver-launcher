@@ -8,7 +8,7 @@ Current features:
 
 ## Usage
 
-[Download here](https://github.com/mfloob/dndserver-launcher/releases/tag/release-v1.0.1)
+[Download here](https://github.com/mfloob/dndserver-launcher/releases)
 
 Select `Dark and Darker A5\DungeonCrawler\Binaries\Win64\DungeonCrawler.exe` from your client folder.
 
