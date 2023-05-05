@@ -148,7 +148,7 @@ pub struct SpawnObjectParams {
 
 impl UGameplayStatics {
     pub unsafe fn spawn_object(&self, class: *const ue::UClass, outer: *const ue::UObject) -> *const ue::UObject {
-        let g_objects = utils::get_g_objects();
+        let g_objects = ue::G_OBJECTS.unwrap();
         let spawn_object = (*g_objects).find_object("Function Engine.GameplayStatics.SpawnObject");
 
         let mut params = SpawnObjectParams {
