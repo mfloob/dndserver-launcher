@@ -1,7 +1,7 @@
 ## About
 Client launcher for Dark and Darker.
 
-![](media/ui_2.png)
+![](media/ui_3.png)
 
 Current features:
 
