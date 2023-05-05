@@ -10,6 +10,7 @@ pub struct AppContext {
     dll_path: String,
     #[serde(skip)]
     process: Option<SpawnedProcess>,
+    timeout: u64
 }
 
 impl Default for AppContext {
@@ -19,6 +20,7 @@ impl Default for AppContext {
             dnd_binary_arguments: "-server=dcweb.pages.dev:80".to_owned(),
             dll_path: App::get_patch_location(),
             process: None,
+            timeout: 15
         }
     }
 }
@@ -40,6 +42,10 @@ impl Default for App {
 
 impl App {
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
+        let mut fonts = egui::FontDefinitions::default();
+        egui_phosphor::add_to_fonts(&mut fonts);    
+        cc.egui_ctx.set_fonts(fonts);
+        
         if let Some(storage) = cc.storage {
             if let Some(t) = eframe::get_value::<App>(storage, eframe::APP_KEY) {                
                 return t;
@@ -84,18 +90,19 @@ impl eframe::App for App {
                     if process.is_doa {
                         process.handle.kill().unwrap();
                         let handle = Command::new(data.dnd_binary_path.clone())
-                            .arg(data.dnd_binary_arguments.to_owned())
-                            .spawn().unwrap();
-
+                        .arg(data.dnd_binary_arguments.to_owned())
+                        .spawn().unwrap();
+                    
                         data.process = Some(SpawnedProcess::new(handle, false));
                     }
                     else {
                         if is_dll_valid {
-                            memory::inject(pid, data.dll_path.as_str());
+                            memory::inject(pid, data.dll_path.as_str());    
                         }
                         data.process = None;
                     }
                 }
+                ctx.request_repaint();
             },
             None => {}
         }
@@ -108,7 +115,6 @@ impl eframe::App for App {
                     .add_filter("exe", &["exe"])
                     .pick_file() {
                         Some(path) => {
-                            println!("{}", path.display().to_string());
                             data.dnd_binary_path = path.display().to_string();
                         },
                         _ => ()
@@ -122,7 +128,7 @@ impl eframe::App for App {
             ui.label("Launch arguments:");
             ui.add(egui::TextEdit::singleline(&mut data.dnd_binary_arguments).hint_text("Launch args"));
 
-            ui.allocate_space(egui::vec2(1f32, ui.available_height() - 45f32));
+            ui.allocate_space(egui::vec2(1f32, ui.available_height() - 60f32));
             ui.vertical_centered(|ui| {
                 let text = match is_dll_valid {
                     true => "found patch dll",
@@ -131,7 +137,7 @@ impl eframe::App for App {
                 ui.label(text);
             });
 
-            ui.allocate_space(egui::vec2(1f32, ui.available_height() - 25f32));
+            ui.allocate_space(egui::vec2(1f32, ui.available_height() - 40f32));
             if data.process.is_none() {
                 ui.vertical_centered(|ui| {
                     if ui.button("Launch").clicked() {
@@ -152,13 +158,20 @@ impl eframe::App for App {
                 });
             }
         });
+
+        egui::TopBottomPanel::bottom("footer").max_height(22f32).show(ctx, |ui| {
+            ui.horizontal_centered(|ui| {
+                ui.allocate_space(egui::vec2(ui.available_width() - 57f32, 1f32));
+                ui.hyperlink_to(format!("{} github", egui_phosphor::GITHUB_LOGO), "https://github.com/mfloob/dndserver-launcher");
+            });
+        });
     }
 }
 
 struct SpawnedProcess {
     handle: Child,
     time_spawned: Instant,
-    is_doa: bool
+    is_doa: bool,
 }
 
 impl SpawnedProcess {
@@ -166,11 +179,11 @@ impl SpawnedProcess {
         Self {
             handle,
             time_spawned: Instant::now(),
-            is_doa
+            is_doa,
         }
     }
 
     pub fn is_ready(&self) -> bool {
-        self.time_spawned.elapsed().as_millis() > 400        
+        self.time_spawned.elapsed().as_millis() >= 400        
     }
 }

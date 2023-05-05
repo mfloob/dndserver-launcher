@@ -12,6 +12,7 @@ eframe = { version = "0.21.0", default-features = false, features = [
 ]}
 rfd = "0.11.3"
 serde = { version = "1.0.158", features = ["derive"] }
+egui-phosphor = "0.1.0"
 
 [dependencies.windows-sys]
 version = "0.42.0"
